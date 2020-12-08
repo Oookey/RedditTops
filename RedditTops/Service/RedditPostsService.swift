@@ -38,7 +38,7 @@ class RedditPostsService {
   
   private func loadReddintPosts(before: String?, after: String, limit: Int) {
     self.networkManager.getTopPosts(before: before, after: after, limit: limit) { response, error in
-
+      response
     }
   }
   
