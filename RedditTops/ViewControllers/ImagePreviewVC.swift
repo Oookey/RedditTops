@@ -31,10 +31,10 @@ class ImagePreviewVC: UIViewController {
   
   private func loadImage() {
     guard
-      let stringUrl = self.url,
-      let url = URL(string: stringUrl.replacingOccurrences(of: "amp;", with: "")),
+      let stringUrl = self.url?.replacingOccurrences(of: "amp;", with: ""), // to resolve 403 error
+      let url = URL(string: stringUrl),
       let imageData = self.imageData,
-      let postId = postId
+      let postId = self.postId
     else { return }
     
     self.redditPostsService?.load(url: url, postId: postId, imageData: imageData) { [weak self] image in

@@ -114,12 +114,10 @@
 				A501EE2F257F95FF00EBAC05 /* DataModels */,
 				A501EE40257FEA6E00EBAC05 /* CoreData */,
 				A501EE03257E487200EBAC05 /* Main.storyboard */,
-				A501EE01257E487200EBAC05 /* RedditPostsVC.swift */,
-				A5C5E8592580D29B0045BDC6 /* RedditPostCell.swift */,
-				A5429BB82581352100787DAD /* ImagePreviewVC.swift */,
+				A5429BE12582339500787DAD /* ViewControllers */,
 				A5429BB52581326B00787DAD /* ImagePreviewView.swift */,
-				A5C5E85C2580D7700045BDC6 /* Extensions.swift */,
 				A5429BDD2582233200787DAD /* TransitionAnimator.swift */,
+				A5C5E85C2580D7700045BDC6 /* Extensions.swift */,
 			);
 			path = RedditTops;
 			sourceTree = "<group>";
@@ -204,6 +202,24 @@
 				A501EE41257FEA8900EBAC05 /* Model.xcdatamodeld */,
 			);
 			path = CoreData;
+			sourceTree = "<group>";
+		};
+		A5429BE12582339500787DAD /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				A5429BE3258233C800787DAD /* RedditPosts */,
+				A5429BB82581352100787DAD /* ImagePreviewVC.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		A5429BE3258233C800787DAD /* RedditPosts */ = {
+			isa = PBXGroup;
+			children = (
+				A501EE01257E487200EBAC05 /* RedditPostsVC.swift */,
+				A5C5E8592580D29B0045BDC6 /* RedditPostCell.swift */,
+			);
+			path = RedditPosts;
 			sourceTree = "<group>";
 		};
 		A5C5E8862580DE000045BDC6 /* ThumbnailInfo */ = {
