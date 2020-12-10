@@ -16,7 +16,7 @@ class ImagePreviewVC: UIViewController {
   
   private var tapGestureRecognizer: UITapGestureRecognizer!
   
-  var redditPostsService: ImageLoadService?
+  var imageLoadService: ImageLoadService?
   
   var image: UIImage?
   var imageData: ImageData?
@@ -37,7 +37,7 @@ class ImagePreviewVC: UIViewController {
       let postId = self.postId
     else { return }
     
-    self.redditPostsService?.load(url: url, postId: postId, imageData: imageData) { [weak self] image in
+    self.imageLoadService?.load(url: url, postId: postId, imageData: imageData) { [weak self] image in
       DispatchQueue.main.async {
         guard
           let imageData = image?.content,

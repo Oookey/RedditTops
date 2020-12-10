@@ -59,7 +59,7 @@ extension RedditPostsVC {
       $0?.url = image.url
       $0?.postId = post.id
       $0?.imageData = imageData
-      $0?.redditPostsService = self.redditPostsService
+      $0?.imageLoadService = self.redditPostsService
       $0?.modalPresentationStyle = .fullScreen
     }
     
