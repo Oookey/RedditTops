@@ -7,13 +7,48 @@
 
 import Foundation
 
+extension URL {
+  init?(fileURLWithPath path: String?) {
+    guard let path = path else { return nil }
+    self.init(fileURLWithPath: path)
+  }
+}
+
 struct Post {
   let id: String
   let title: String
   let author: String
-  let thumbnail: Thumbnail
-  let image: LocalImage
+  let created: Date
+  var thumbnail: Thumbnail?
+  var image: LocalImage?
   let comments: Int
+  let ups: Int
+  
+  init(with post: RedditPost) {
+    self.id = post.id ?? ""
+    self.title = post.title ?? ""
+    self.author = post.author ?? ""
+    self.created = post.created
+    self.comments = Int(post.comments)
+    self.ups = Int(post.ups)
+    
+    if let thumbnail = post.thumbnail, let url = thumbnail.url {
+      let thumbnailStorageUrl = URL(fileURLWithPath: thumbnail.storageUrl)
+      self.thumbnail = Thumbnail(url: url, postId: post.id ?? "", storageUrl: thumbnailStorageUrl, content: nil)
+    } else {
+      self.thumbnail = nil
+    }
+    
+    if let image = post.image {
+      let imageStorageUrl = URL(fileURLWithPath: image.storageUrl)
+      let imageData = ImageData(url: image.url ?? "", width: Int(image.width), height: Int(image.height))
+      let localImage = LocalImage(postId: post.id ?? "", imageData: imageData, storageUrl: imageStorageUrl, content: nil)
+
+      self.image = localImage
+    } else {
+      self.image = nil
+    }
+  }
 }
 
 struct ImageData: Codable {
@@ -26,7 +61,7 @@ struct LocalImage {
   var postId: String
   var imageData: ImageData
   var storageUrl: URL?
-  var content: Data
+  var content: Data?
 }
 
 struct Thumbnail {
@@ -42,10 +77,11 @@ struct ApiPost: Codable {
   let id: String
   let title: String
   let author: String
-  let thumbnailUrl: String
+  let thumbnailUrl: String?
   let created: TimeInterval
-  let image: Preview
+  let image: Preview?
   let comments: Int
+  let ups: Int
   
   enum CodingKeys: String, CodingKey {
     case id = "id"
@@ -55,6 +91,7 @@ struct ApiPost: Codable {
     case created = "created"
     case image = "preview"
     case comments = "num_comments"
+    case ups = "ups"
   }
   
   func encode(to encoder: Encoder) throws {
@@ -66,6 +103,7 @@ struct ApiPost: Codable {
     try container.encode(self.created, forKey: .created)
     try container.encode(self.image, forKey: .image)
     try container.encode(self.comments, forKey: .comments)
+    try container.encode(self.ups, forKey: .ups)
   }
   
   init(from decoder: Decoder) throws {
@@ -73,10 +111,11 @@ struct ApiPost: Codable {
     self.id = try container.decode(String.self, forKey: .id)
     self.title = try container.decode(String.self, forKey: .title)
     self.author = try container.decode(String.self, forKey: .author)
-    self.thumbnailUrl = try container.decode(String.self, forKey: .thumbnailUrl)
+    self.thumbnailUrl = try? container.decode(String?.self, forKey: .thumbnailUrl)
     self.created = try container.decode(TimeInterval.self, forKey: .created)
-    self.image = try container.decode(Preview.self, forKey: .image)
+    self.image = try? container.decode(Preview?.self, forKey: .image)
     self.comments = try container.decode(Int.self, forKey: .comments)
+    self.ups = try container.decode(Int.self, forKey: .ups)
   }
 }
 

@@ -15,41 +15,65 @@ class FileManagerService {
     return paths[0]
   }
   
-  func save(thumbnail: inout Thumbnail) throws {
-    let folderUrl = self.documentsDirectory.appendingPathComponent(thumbnail.postId)
-    let imageDataUrl = folderUrl.appendingPathComponent(Keys.thumbnail)
-
-    try? self.createDirectory(name: thumbnail.postId)
-
-    self.fileManager.createFile(atPath: imageDataUrl.path,
-                                contents: thumbnail.content,
-                                attributes: nil)
+  private func createDirectory(name: String) throws -> URL {
+    let url = self.documentsDirectory
+      .appendingPathComponent(Keys.mainDirectoryName)
+      .appendingPathComponent(name)
     
-    thumbnail.storageUrl = folderUrl
+    try self.fileManager.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
+    return url
+  }
+}
+
+//MARK: - Thumbnail
+
+extension FileManagerService {
+  func save(thumbnail: Thumbnail) throws -> URL {
+    let folderUrl: URL = try self.createDirectory(name: thumbnail.postId)
+    let imageDataUrl = folderUrl.appendingPathComponent(Keys.thumbnail)
+    
+    guard
+      !self.fileManager.fileExists(atPath: imageDataUrl.path),
+      self.fileManager.createFile(atPath: imageDataUrl.path,
+                                  contents: thumbnail.content,
+                                  attributes: nil)
+    else { throw FileManagerError.unableToCreateFile }
+    return imageDataUrl
+  }
+  
+  func fileExists(post: String, _ type: FileType) -> Bool {
+    let fileUrl = self.documentsDirectory
+      .appendingPathComponent(Keys.mainDirectoryName)
+      .appendingPathComponent(post)
+      .appendingPathComponent(type == .thumbnail ? Keys.thumbnail : Keys.image)
+    
+    return self.fileManager.fileExists(atPath: fileUrl.path)
   }
   
   func getThumbnail(from post: String) throws -> Thumbnail {
-    let folderUrl = self.documentsDirectory.appendingPathComponent(post)
-    
-    guard self.direcrotyExists(at: folderUrl.path) else { throw FileManagerError.fileDoesNotExists }
-
-    let imageDataUrl = folderUrl.appendingPathComponent(Keys.thumbnail)
+    let fileUrl = self.documentsDirectory
+      .appendingPathComponent(Keys.mainDirectoryName)
+      .appendingPathComponent(post)
+      .appendingPathComponent(Keys.thumbnail)
 
     guard
-      let imageData = self.fileManager.contents(atPath: imageDataUrl.path)
-    else { throw FileManagerError.fileDoesNotExists }
+      let imageData = self.fileManager.contents(atPath: fileUrl.path)
+    else { throw FileManagerError.unableToReadFile }
     
-    return Thumbnail(url: "", postId: post, storageUrl: imageDataUrl, content: imageData)
+    return Thumbnail(url: "", postId: post, storageUrl: fileUrl, content: imageData)
   }
   
+  //MARK: - Image
+}
+
+extension FileManagerService {
   func save(image: inout LocalImage) throws {
     let encoder = PropertyListEncoder()
-    let folderUrl = self.documentsDirectory.appendingPathComponent(image.postId)
+    let folderUrl: URL = try self.createDirectory(name: image.postId)
+
     let imageDataUrl = folderUrl.appendingPathComponent(Keys.image)
     let parametersUrl = folderUrl.appendingPathComponent(Keys.parameters)
-    
-    try? self.createDirectory(name: image.postId)
-    
+        
     self.fileManager.createFile(atPath: parametersUrl.path,
                                 contents: try encoder.encode(image.imageData),
                                 attributes: nil)
@@ -62,51 +86,47 @@ class FileManagerService {
   }
   
   func getImage(from post: String) throws -> LocalImage? {
-    let folderUrl = self.documentsDirectory.appendingPathComponent(post)
-    
-    guard self.direcrotyExists(at: folderUrl.path) else { throw FileManagerError.fileDoesNotExists }
-    
+    let folderUrl = self.documentsDirectory
+      .appendingPathComponent(Keys.mainDirectoryName)
+      .appendingPathComponent(post)
+        
     let imageDataUrl = folderUrl.appendingPathComponent(Keys.image)
     let parametersUrl = folderUrl.appendingPathComponent(Keys.parameters)
 
     guard
       let imageData = self.fileManager.contents(atPath: imageDataUrl.path),
       let parametersData = self.fileManager.contents(atPath: parametersUrl.path)
-    else { throw FileManagerError.fileDoesNotExists }
+    else { throw FileManagerError.unableToReadFile }
     
     let parameters = try PropertyListDecoder().decode(ImageData.self, from: parametersData)
     
     return LocalImage(postId: post, imageData: parameters, storageUrl: folderUrl, content: imageData)
   }
-  
-  private func createDirectory(name: String) throws {
-    let url = self.documentsDirectory
-      .appendingPathComponent(Keys.mainDirectoryName)
-      .appendingPathComponent(name)
-    
-    guard !self.direcrotyExists(at: url.path) else { throw FileManagerError.directoryExists }
-    
-    try self.fileManager.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
-  }
-  
-  private func direcrotyExists(at path: String) -> Bool {
-    var isDirectory = ObjCBool(true)
-    let exists = self.fileManager.fileExists(atPath: path, isDirectory: &isDirectory)
-    return exists && isDirectory.boolValue
-  }
-  
+}
+
+//MARK: - Misc
+
+extension FileManagerService {
   private struct Keys {
     static let mainDirectoryName: String = "RedditPosts"
     static let thumbnail: String = "thumbnail"
     static let image: String = "image"
     static let parameters: String = "parameters.plist"
   }
+  
+  enum FileType {
+    case thumbnail, image
+  }
 }
+
+//MARK: - FileManagerError
 
 enum FileManagerError: String, LocalizedError {
   case directoryExists = "Directory already exists"
   case fileDoesNotExists = "File does not exists"
-  
+  case unableToCreateFile = "Unable to create file"
+  case unableToReadFile = "Unable to read file"
+
   var errorDescription: String? {
     return self.rawValue
   }

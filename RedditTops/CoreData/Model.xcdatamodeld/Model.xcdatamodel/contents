@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17511" systemVersion="20B29" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Multimedia" representedClassName="Multimedia" syncable="YES">
+        <attribute name="created" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="height" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="storageUrl" optional="YES" attributeType="String"/>
         <attribute name="url" optional="YES" attributeType="String"/>
@@ -10,12 +11,21 @@
     <entity name="RedditPost" representedClassName="RedditPost" syncable="YES">
         <attribute name="author" optional="YES" attributeType="String"/>
         <attribute name="comments" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="created" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="String"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <attribute name="ups" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="image" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Multimedia" inverseName="post" inverseEntity="Multimedia"/>
+        <relationship name="thumbnail" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ThumbnailInfo" inverseName="post" inverseEntity="ThumbnailInfo"/>
+    </entity>
+    <entity name="ThumbnailInfo" representedClassName="ThumbnailInfo" syncable="YES">
+        <attribute name="storageUrl" optional="YES" attributeType="String"/>
+        <attribute name="url" optional="YES" attributeType="String"/>
+        <relationship name="post" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="RedditPost" inverseName="thumbnail" inverseEntity="RedditPost"/>
     </entity>
     <elements>
-        <element name="RedditPost" positionX="-63" positionY="-18" width="128" height="104"/>
-        <element name="Multimedia" positionX="-63.04583740234375" positionY="79.53240966796875" width="128" height="104"/>
+        <element name="Multimedia" positionX="-63.04583740234375" positionY="79.53240966796875" width="128" height="119"/>
+        <element name="RedditPost" positionX="-63" positionY="-18" width="128" height="149"/>
+        <element name="ThumbnailInfo" positionX="-72" positionY="72" width="128" height="74"/>
     </elements>
 </model>

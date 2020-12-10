@@ -36,6 +36,7 @@ struct NetworkManager {
           let result = try JSONDecoder().decode(ApiRespoinse.self, from: data)
           completion(result, nil)
         } catch {
+          print(error)
           completion(nil, NetworkResponse.unableToDecode)
         }
       }
@@ -49,7 +50,7 @@ struct NetworkManager {
       do {
         let data = try Data(contentsOf: url)
         completion(data, nil)
-      } catch(let error) {
+      } catch {
         completion(nil, error)
       }
     }

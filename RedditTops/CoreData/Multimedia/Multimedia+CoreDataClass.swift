@@ -2,7 +2,7 @@
 //  Multimedia+CoreDataClass.swift
 //  RedditTops
 //
-//  Created by Sergey Shepilov on 08.12.2020.
+//  Created by Sergey Shepilov on 09.12.2020.
 //
 //
 
