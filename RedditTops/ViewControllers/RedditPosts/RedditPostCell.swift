@@ -26,7 +26,7 @@ class RedditPostCell: UITableViewCell {
       let thumbnailData = post.thumbnail?.content,
       let thumbnail = UIImage(data: thumbnailData)
     else {
-      self.postImageView.image = #imageLiteral(resourceName: "reddit-icon")
+      self.postImageView.image = #imageLiteral(resourceName: "Reddit-icon")
       return
     }
     
@@ -47,7 +47,7 @@ class RedditPostCell: UITableViewCell {
   
   override func prepareForReuse() {
     super.prepareForReuse()
-    self.postImageView.image = #imageLiteral(resourceName: "reddit-icon")
+    self.postImageView.image = #imageLiteral(resourceName: "Reddit-icon")
   }
   
   override func layoutSublayers(of layer: CALayer) {
